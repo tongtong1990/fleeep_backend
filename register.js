@@ -1,3 +1,4 @@
+const Q = require('q');
 const mysql = require('mysql');
 var mysqlUtils = require('./mysqlUtils');
 
