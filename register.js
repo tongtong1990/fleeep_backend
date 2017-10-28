@@ -4,31 +4,46 @@ var mysqlUtils = require('./mysqlUtils');
 
 var registerFlow = function(req, res) {
     var conn = mysql.createConnection(mysqlUtils.createConnection());
-    Q.fcall(conn.connect())
-        .then(function(err) {
-            if (err) throw err;
-            return Q.fcall("SELECT COUNT(*) FROM user");
-        })
-        .then(function(err, result) {
-            if (err) throw err;
-            if (result.length > 0) {
-                conn.end();
-                res.sendStatus(500).send({
+    var email = req.body.email;
+    var pwd = req.body.pwd;
+    var isResSent = false;
+    mysqlUtils.queryPromise(
+        conn,
+        "SELECT COUNT(*) as cnt FROM user WHERE email = ?",
+        [email])
+        .then(function(result) {
+            if (result[0]['cnt'] > 0) {
+                isResSent = true;
+                return res.status(400).send({
                     result: null,
                     message: 'Email already exists.'
                 });
             } else {
-                conn.end();
-                res.send("OK");
+                return mysqlUtils.queryPromise(
+                    conn,
+                    'INSERT INTO user SET ?',
+                    {
+                        email: email,
+                        pwd: pwd
+                    });
             }
         })
+        .then(function(result) {
+            if (isResSent) return result;
+            isResSent = true;
+            return res.send({
+                result: 'ok',
+                message: 'Register completed.'
+            });
+        })
         .catch(function(err) {
-            conn.end();
-            res.sendStatus(500).send({
+            console.log(err.toString());
+            res.status(500).send({
                 result: null,
-                message: err.toString()
-            })
-        }).done();
+                message: 'Internal error: ' + err.toString()
+            });
+        })
+        .done();
 };
 
 module.exports = registerFlow;
