@@ -11,7 +11,7 @@ var activateFlow = require('./activate');
 
 app.post('/register', registerFlow);
 
-app.get('/activate', activateFlow);
+app.get('/activate/:email---:actcode', activateFlow);
 app.get('/login/:email/:pwd', loginFlow);
 
 app.listen(3000, function() {

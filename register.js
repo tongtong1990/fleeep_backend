@@ -1,5 +1,5 @@
-const Q = require('q');
 const mysql = require('mysql');
+const randomstring = require('randomstring');
 var mysqlUtils = require('./mysqlUtils');
 
 var registerFlow = function(req, res) {
@@ -19,12 +19,19 @@ var registerFlow = function(req, res) {
                     message: 'Email already exists.'
                 });
             } else {
+                var activationCode = randomstring.generate({
+                    length: 32,
+                    charset: 'alphabetic'
+                });
+                var currentTimestamp = Date.now();
                 return mysqlUtils.queryPromise(
                     conn,
                     'INSERT INTO user SET ?',
                     {
                         email: email,
-                        pwd: pwd
+                        pwd: pwd,
+                        activation_code: activationCode,
+                        activation_expire_time: currentTimestamp + 24*3600*1000
                     });
             }
         })
@@ -42,6 +49,9 @@ var registerFlow = function(req, res) {
                 result: null,
                 message: 'Internal error: ' + err.toString()
             });
+        })
+        .fin(function() {
+            conn.end();
         })
         .done();
 };

@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-const Q = require('q');
 var mysqlUtils = require('./mysqlUtils');
 
 var loginFlow = function(req, res) {
@@ -21,6 +20,11 @@ var loginFlow = function(req, res) {
                     result: null,
                     message: 'Password not matched. Please try again.'
                 });
+            // } else if (result[0].isVerfied == null) {
+            //     return res.status(400).send({
+            //         result: null,
+            //         message: 'User not activated yet.'
+            //     });
             } else {
                 return res.send({
                     result: 'ok',
@@ -34,6 +38,9 @@ var loginFlow = function(req, res) {
                 result: null,
                 message: 'Internal error: ' + err.toString()
             });
+        })
+        .fin(function() {
+            conn.end();
         })
         .done();
 };
