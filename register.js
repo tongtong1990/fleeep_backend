@@ -20,8 +20,8 @@ var registerFlow = function(req, res) {
                 });
             } else {
                 var activationCode = randomstring.generate({
-                    length: 32,
-                    charset: 'alphabetic'
+                    length: 8,
+                    charset: 'numeric'
                 });
                 var currentTimestamp = Date.now();
                 return mysqlUtils.queryPromise(
