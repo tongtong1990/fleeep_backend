@@ -24,6 +24,8 @@
     "q": "^1.5.1",
     "randomstring": "^1.1.5",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "sendinblue-api": "^1.0.8",
+    "underscore-node": "^0.1.2"
   }
 }

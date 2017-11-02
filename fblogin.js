@@ -17,6 +17,7 @@ var fbLoginFlow = function(req, res) {
         },
         json: true
     };
+    var fbUserName, fbUserPhoto;
     request(fbUserOptions)
         .then(function(result) {
             var fbId = result.id;
@@ -27,16 +28,48 @@ var fbLoginFlow = function(req, res) {
                     message: 'Fail to log in. Please try again.'
                 });
             }
+            fbUserName = result.name;
+            fbUserPhoto = result.picture.data.url;
             return mysqlUtils.queryPromise(
                 conn,
-                "SELECT COUNT(*) as cnt FROM user WHERE email = ?",
+                "SELECT id FROM user WHERE fbid = ?",
                 [userId]);
         })
         .then(function(result) {
             if (isResSent) return;
-            if (result[0]['cnt'] == 0) {
-
+            if (result.length == 0) {
+                return mysqlUtils.queryPromise(
+                    conn,
+                    'INSERT INTO user SET ?',
+                    {
+                        fbid: userId,
+                        imageid: fbUserPhoto,
+                        username: fbUserName
+                    });
+            } else {
+                isResSent = true;
+                return res.send({
+                    result: result[0].id,
+                    message: 'FB login completed.'
+                });
             }
+        })
+        .then(function(result) {
+            if (isResSent) return;
+            return res.send({
+                result: result.insertId,
+                message: 'FB login completed.'
+            });
+        })
+        .catch(function(err) {
+            console.log(err.toString());
+            res.status(500).send({
+                result: null,
+                message: 'Internal error: ' + err.toString()
+            });
+        })
+        .finally(function() {
+            conn.end();
         });
 };
 

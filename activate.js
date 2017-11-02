@@ -3,7 +3,7 @@ var mysqlUtils = require('./mysqlUtils');
 
 var activateFlow = function(req, res) {
   var conn = mysql.createConnection(mysqlUtils.createConnection());
-  var activationCode = req.params.actcode;
+  var activationCode = req.params.code;
   var email = req.params.email;
   var isResSent = false;
   mysqlUtils.queryPromise(
