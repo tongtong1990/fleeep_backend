@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const request = require('request-promise');
 var mysqlUtils = require('./mysqlUtils');
+var constants = require('./constants');
 
 const fbUserFields = 'picture,name';
 
@@ -25,6 +26,7 @@ var fbLoginFlow = function(req, res) {
                 isResSent = true;
                 return res.status(400).send({
                     result: null,
+                    status: constants.fbInvalidUserIdStatusCode,
                     message: 'Fail to log in. Please try again.'
                 });
             }
@@ -50,6 +52,7 @@ var fbLoginFlow = function(req, res) {
                 isResSent = true;
                 return res.send({
                     result: result[0].id,
+                    status: constants.okStatusCode,
                     message: 'FB login completed.'
                 });
             }
@@ -58,6 +61,7 @@ var fbLoginFlow = function(req, res) {
             if (isResSent) return;
             return res.send({
                 result: result.insertId,
+                status: constants.okStatusCode,
                 message: 'FB login completed.'
             });
         })
@@ -65,6 +69,7 @@ var fbLoginFlow = function(req, res) {
             console.log(err.toString());
             res.status(500).send({
                 result: null,
+                status: constants.internalErrorStatusCode,
                 message: 'Internal error: ' + err.toString()
             });
         })

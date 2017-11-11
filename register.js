@@ -3,6 +3,7 @@ const randomstring = require('randomstring');
 const request = require('request-promise');
 const _ = require('underscore-node');
 var mysqlUtils = require('./mysqlUtils');
+var constants = require('./constants');
 
 var registerFlow = function(req, res) {
     var conn = mysql.createConnection(mysqlUtils.createConnection());
@@ -19,6 +20,7 @@ var registerFlow = function(req, res) {
                 isResSent = true;
                 return res.status(400).send({
                     result: null,
+                    status: constants.userAlreadyExistStatusCode,
                     message: 'Email already exists.'
                 });
             } else {
@@ -59,16 +61,12 @@ var registerFlow = function(req, res) {
                 body: postBody
             };
             return request(postOptions);
-            // isResSent = true;
-            // return res.send({
-            //     result: 'ok',
-            //     message: 'Register completed.'
-            // });
         })
         .then(function(result) {
             if (isResSent) return;
             return res.send({
                 result: 'ok',
+                status: constants.okStatusCode,
                 message: 'Register completed.'
             });
         })
@@ -76,6 +74,7 @@ var registerFlow = function(req, res) {
             console.log(err.toString());
             res.status(500).send({
                 result: null,
+                status: constants.internalErrorStatusCode,
                 message: 'Internal error: ' + err.toString()
             });
         })
