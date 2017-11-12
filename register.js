@@ -2,7 +2,9 @@ const mysql = require('mysql');
 const randomstring = require('randomstring');
 const request = require('request-promise');
 const _ = require('underscore-node');
+
 var mysqlUtils = require('./mysqlUtils');
+var emailUtils = require('./emailUtils');
 var constants = require('./constants');
 
 var registerFlow = function(req, res) {
@@ -42,24 +44,8 @@ var registerFlow = function(req, res) {
         })
         .then(function(result) {
             if (isResSent) return result;
-            var to = {};
-            to[email] = 'to ' + email;
-            var postBody = {
-                to: to,
-                from: ['fleeekio@gmail.com', 'fleeek io'],
-                subject: 'Your activation code for fleeek io account',
-                html: '<p>Dear user, your activation code is: </p><p><h1>'
-                + activationCode + '</h1></p>'
-            };
-            var postOptions = {
-                method: 'POST',
-                uri: 'https://api.sendinblue.com/v2.0/email',
-                headers: {
-                    'api-key': 'UBTWCOYkNxb9E1Jz'
-                },
-                json: true,
-                body: postBody
-            };
+            var postBody = emailUtils.createActivationEmail(email, activationCode);
+            var postOptions = emailUtils.createPostOptions(postBody);
             return request(postOptions);
         })
         .then(function(result) {
