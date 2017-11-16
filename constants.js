@@ -1,4 +1,5 @@
 const invalidUserStatusCode = 'INVALID_USER';
+const registerdUserStatusCode = 'REGISTERED_USER';
 const invalidPasswordStatusCode = 'INVALID_PASSWORD';
 const inactivatedUserStatusCode = 'USER_NOT_ACTIVATED';
 const internalErrorStatusCode = 'INTERNAL_ERROR';
@@ -17,5 +18,6 @@ module.exports = {
     fbInvalidUserIdStatusCode: fbInvalidUserIdStatusCode,
     invalidActivationCodeStatusCode: invalidActivationCodeStatusCode,
     activationCodeExpireStatusCode: activationCodeExpireStatusCode,
+    registeredUserStatusCode: registerdUserStatusCode,
     okStatusCode: okStatusCode
 };

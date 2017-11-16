@@ -7,8 +7,8 @@ const fbUserFields = 'picture,name';
 
 var fbLoginFlow = function(req, res) {
     var conn = mysql.createConnection(mysqlUtils.createConnection());
-    var userId = req.params.id;
-    var token = req.params.token;
+    var userId = req.body.id;
+    var token = req.body.token;
     var isResSent = false;
     var fbUserOptions = {
         uri: 'https://graph.facebook.com/me',

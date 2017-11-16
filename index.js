@@ -10,12 +10,15 @@ var registerFlow = require('./register');
 var loginFlow = require('./login');
 var fbLoginFlow = require('./fblogin');
 var resendFlow = require('./resendActivationCode');
+var checkUserStatusFlow = require('./checkUserStatus');
+var updateUserProfileFlow = require('./updateUserProfile');
 
+app.post('/checkUserStatus', checkUserStatusFlow);
 app.post('/register', registerFlow);
 app.post('/login', loginFlow);
 app.post('/resend', resendFlow);
-
-app.get('/fblogin/:token/:id', fbLoginFlow);
+app.post('/updateUserProfile', updateUserProfileFlow);
+app.post('/fblogin/:token/:id', fbLoginFlow);
 
 app.listen(3000, function() {
     console.log('Server started.');
