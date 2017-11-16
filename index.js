@@ -8,16 +8,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 var registerFlow = require('./register');
 var loginFlow = require('./login');
-var activateFlow = require('./activate');
 var fbLoginFlow = require('./fblogin');
 var resendFlow = require('./resendActivationCode');
 
 app.post('/register', registerFlow);
+app.post('/login', loginFlow);
+app.post('/resend', resendFlow);
 
-app.get('/activate/:email/:code', activateFlow);
-app.get('/login/:email/:pwd', loginFlow);
 app.get('/fblogin/:token/:id', fbLoginFlow);
-app.get('/resend/:email', resendFlow);
 
 app.listen(3000, function() {
     console.log('Server started.');

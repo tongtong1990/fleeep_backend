@@ -9,7 +9,7 @@ var constants = require('./constants');
 
 var resendActivationCodeFlow = function(req, res) {
     var conn = mysql.createConnection(mysqlUtils.createConnection());
-    var email = req.params.email;
+    var email = req.body.email;
     var activationCode = randomstring.generate({
         length: 8,
         charset: 'numeric'

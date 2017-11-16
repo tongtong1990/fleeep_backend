@@ -10,36 +10,54 @@ var constants = require('./constants');
 var registerFlow = function(req, res) {
     var conn = mysql.createConnection(mysqlUtils.createConnection());
     var email = req.body.email;
-    var pwd = req.body.pwd;
+    var code = req.body.code;
     var isResSent = false;
     var activationCode;
     mysqlUtils.queryPromise(
         conn,
-        "SELECT COUNT(*) as cnt FROM user WHERE email = ?",
+        "SELECT * FROM user WHERE email = ?",
         [email])
         .then(function(result) {
-            if (result[0]['cnt'] > 0) {
+            if (code) {
                 isResSent = true;
-                return res.status(400).send({
-                    result: null,
-                    status: constants.userAlreadyExistStatusCode,
-                    message: 'Email already exists.'
-                });
-            } else {
-                activationCode = randomstring.generate({
-                    length: 8,
-                    charset: 'numeric'
-                });
-                var currentTimestamp = Date.now();
-                return mysqlUtils.queryPromise(
-                    conn,
-                    'INSERT INTO user SET ?',
-                    {
-                        email: email,
-                        pwd: pwd,
-                        activation_code: activationCode,
-                        activation_expire_time: currentTimestamp + 24*3600*1000
+                if (result.length == 0
+                    || result[0].activation_code != code
+                    || result[0].activation_expire_time < Date.now()) {
+                    return res.status(400).send({
+                        result: null,
+                        status: constants.invalidActivationCodeStatusCode,
+                        message: 'Code not valid.'
                     });
+                } else {
+                    return res.send({
+                        result: result[0].id,
+                        status: constants.okStatusCode,
+                        message: 'ok'
+                    });
+                }
+            } else {
+                if (result.length > 0) {
+                    isResSent = true;
+                    return res.status(400).send({
+                        result: null,
+                        status: constants.userAlreadyExistStatusCode,
+                        message: 'Email already exists.'
+                    });
+                } else {
+                    activationCode = randomstring.generate({
+                        length: 8,
+                        charset: 'numeric'
+                    });
+                    var currentTimestamp = Date.now();
+                    return mysqlUtils.queryPromise(
+                        conn,
+                        'INSERT INTO user SET ?',
+                        {
+                            email: email,
+                            activation_code: activationCode,
+                            activation_expire_time: currentTimestamp + 24*3600*1000
+                        });
+                }
             }
         })
         .then(function(result) {
@@ -53,7 +71,7 @@ var registerFlow = function(req, res) {
             return res.send({
                 result: 'ok',
                 status: constants.okStatusCode,
-                message: 'Register completed.'
+                message: 'Code sent in registration flow.'
             });
         })
         .catch(function(err) {
