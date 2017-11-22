@@ -11,7 +11,7 @@ var resendActivationCodeFlow = function(req, res) {
     var conn = mysql.createConnection(mysqlUtils.createConnection());
     var email = req.body.email;
     var activationCode = randomstring.generate({
-        length: 8,
+        length: 6,
         charset: 'numeric'
     });
     var activationCodeExpireTime = Date.now() + 24 * 3600 * 1000;

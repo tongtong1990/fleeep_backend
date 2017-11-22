@@ -30,7 +30,7 @@ var checkUserStatusFlow = function(req, res) {
             };
         }
         activationCode = randomstring.generate({
-            length: 8,
+            length: 6,
             charset: 'numeric'
         });
         var currentTimestamp = Date.now();
